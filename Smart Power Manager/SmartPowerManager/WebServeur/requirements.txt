@@ -1,0 +1,16 @@
+Flask==2.0.2
+Flask-Ext==0.1
+Flask-SocketIO==5.1.1
+gpiozero==1.6.2
+iptools==0.7.0
+mysql==0.0.3
+mysql-connector==2.2.9
+mysqlclient==2.1.0
+numpy==1.19.5
+ping3==3.0.2
+python-socketio==5.5.0
+requests==2.25.1
+requests-oauthlib==1.0.0
+responses==0.12.1
+RPi.GPIO==0.7.0
+paramiko==2.11.0

@@ -1,0 +1,10 @@
+{
+    "settings": [
+        {
+            "second_board_ip": "192.168.1.12",
+            "scenario_on_boot": "ON",
+            "secondBoardTimout": "0.5",
+            "third_board_ip": "192.168.1.13"
+        }
+    ]
+}

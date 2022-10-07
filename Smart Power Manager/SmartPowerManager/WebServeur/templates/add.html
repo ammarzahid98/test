@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+   <meta charset="utf-8">
+   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/add_device.css') }}" />
+   <title>SmartPowerManager</title>
+   <script type="text/javascript" src="{{ url_for('static', filename = 'jquery.min.js') }}">
+   </script>
+</head>
+
+<body>
+   <script>
+   </script>
+   <div class="form">
+      <form id="add_form" action="/resultat" method="post">
+         <div class="title">Add device</div>
+         <select name="device" id="device_selector">
+            <option value="create">I want to create a new device</option>
+         </select>
+         <br />
+         <div>
+            <label for="uname">Device Name</label>
+            <input type="text" id="uname" name="dev_name" required="required" pattern="^[a-zA-Z0-9_ ]+$" title="No special characters" maxlength="999">
+         </div>
+         </br>
+         <label> Device IP (If no IP, leave blank) </label></br>
+         <input id="dev_ip_id" name="dev_ip" title="Enter a valid IP adress or nothing" pattern="^(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|null$" class="input" type="text" placeholder=" " /><br />
+         </br>
+         <label> Raspberry PIN </label></br>
+         <input id="GPIO" required="required" pattern="^-?\d+$" title="Enter a number" name="pin_gpio" class="input" type="text" placeholder=" " /><br />
+         </br>
+         <label> Reboot time in seconds</label></br>
+         <input id="reboot_time_id" required="required" pattern="^-?\d+$" name="reboot_time" title="Enter a number" class="input" type="text" placeholder=" " /><br />
+         </br>
+         <label> This device will be connected to : </label></br>
+         <select id="dev_type_select" name="dev_type">
+            <option value="not_dev_rm">IP Relay Board</option>
+            <option value="rm_dev">CC Relay Board</option>
+            <!--Modification-->
+	         <option value="rm_DP">DP Relay Board</option>
+            <!--Modification-->
+         </select>
+         </br></br>
+         <button id="submit_button" type="text" class="submit">Add this new device</button></br>
+      </form>
+      <button type="text" class="button_quit" onclick="backtomainboard()">Back to main board</button>
+   </div>
+   <script>
+   var myArr;
+   var mustVerifyIfDeviceExist = "YES";
+   var GPIOCacheModification;
+   window.addEventListener('load', function() {
+      $.ajaxSetup({
+         async: false
+      });
+      var element = document.getElementById("device_selector");
+      myJsonCleaned = '{{ name }}'.replaceAll('&#34;', '"');
+      myArr = JSON.parse(myJsonCleaned);
+      for(var i = 0; i < myArr.devices.length; i++) {
+         opt1 = document.createElement("option");
+         opt1.value = i;
+         opt1.text = myArr.devices[i].device_name;
+         element.add(opt1, null);
+      }
+      $.ajaxSetup({
+         async: true
+      });
+   })
+   $('#device_selector').on('change', function() {
+      var isConform = true;
+      var isConform2 = true;
+      console.log(this.value);
+      if(this.value != "create") {
+         mustVerifyIfDeviceExist = "NO";
+         $('#uname').prop("readonly", true);
+         $("#submit_button").html("Save modifications");
+         GPIOCacheModification = myArr.devices[this.value].GPIO_pin;
+         $("#uname").val(myArr.devices[this.value].device_name);
+         $("#GPIO").val(myArr.devices[this.value].GPIO_pin);
+         $("#reboot_time_id").val(myArr.devices[this.value].reboot_time);
+         $("#dev_ip_id").val(myArr.devices[this.value].IP_adress);
+         $("#dev_type_select").val(myArr.devices[this.value].device_type).change();
+      } else {
+         $("#submit_button").html("Add this new device");
+         mustVerifyIfDeviceExist = "YES";
+         $('#uname').prop("readonly", true);
+      }
+   });
+   var isConform = true;
+   var isConform2 = true;
+
+   function set_conform_value(result_request) {
+      //if name already exist, it must be changed
+   }
+
+   function checkNameConformity() {
+      //CHECK IF NEW DEVICE NAME DO NOT ALREADY EXIST
+      var functionPythonName = 'is_this_device_name_exist';
+      var functionPythonParamGPIOPintoRemove = $("#uname").val();
+      $.ajaxSetup({
+         async: false
+      });
+      $.getJSON(functionPythonName.concat("/", functionPythonParamGPIOPintoRemove), {}, function(data) {
+         if(data == "TRUE") {
+            isConform = false;
+            alert("Device name already exist, you must change it")
+         }
+         if(data == "FALSE") {
+            isConform = true;
+         }
+         console.log(data);
+      });
+   }
+
+   function checkGPIOConformity() {
+      //CHECK IF THE GPIO IS NOT ALREADY USED
+      var functionPythonName = 'is_this_gpio_is_used';
+      var functionPythonParamGPIOPintoRemove = $("#dev_type_select").val() + "=" + $("#GPIO").val();
+      $.getJSON(functionPythonName.concat("/", functionPythonParamGPIOPintoRemove), {}, function(data) {
+         if(data == "TRUE") {
+            isConform2 = false;
+            alert("This Gpio is already used, you must choose another one")
+         }
+         if(data == "FALSE") {
+            isConform2 = true;
+         }
+         console.log(data);
+      });
+      $.ajaxSetup({
+         async: true
+      });
+   }
+   $("#add_form").submit(function(e) {
+      e.preventDefault();
+      //in case a new device is added
+      if(mustVerifyIfDeviceExist == "YES") {
+         console.log("checking name");
+         checkNameConformity();
+         checkGPIOConformity();
+         console.log(isConform);
+         if(isConform == true && isConform2 == true) {
+            console.log("submitted");
+            alert("Device has been added")
+            this.submit();
+         }
+      }
+      //in case a new device is modified
+      if(mustVerifyIfDeviceExist == "NO") {
+         this.submit();
+         console.log("");
+      }
+      return false;
+   });
+
+   function backtomainboard() {
+      document.location.href = "/";
+   }
+   </script>
+</body>
+
+</html>

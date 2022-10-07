@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>SmartPowerManager</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/add_scenario.css') }}" />
+  <script>
+  </script>
+  <script type="text/javascript" src="{{ url_for('static', filename = 'dragula.min.js') }}">
+  </script>
+  <script type="text/javascript" src="{{ url_for('static', filename = 'jquery.min.js') }}">
+  </script>
+  <script>
+  </script>
+</head>
+
+<body>
+  <script>
+  var scenarioLine;
+  var valueSelected = -1;
+  //-----------------------------------------------------
+  //ADD ALL DEVICE PRESENT IN THE JSON IN THE LEFT DIV
+  //-----------------------------------------------------
+  window.onload = function() {
+    $("#ScenarioName").on({
+      keydown: function(e) {
+        if(e.which === 32) return false;
+      },
+      change: function() {
+        this.value = this.value.replace(/\s/g, "");
+      }
+    });
+    //add existing scenario
+    var element = document.getElementById("scenario_selector");
+    //récupération du JSON à l'arrivé sur la page
+    datascenariostr = '{{ datascenario }}';
+    //console.log(datascenariostr);
+    //B is the \n separator
+    datascenariostr = datascenariostr.split("B");
+    //console.log(datascenariostr);
+    var theDiv = document.getElementById("other_button_div");
+    for(var i = 0; i < datascenariostr.length; i++) {
+      if(datascenariostr[i] != "") {
+        datascenarioNAME = datascenariostr[i].split(" ")
+        opt1 = document.createElement("option");
+        opt1.value = i; //the number of the scenario line -1
+        opt1.text = datascenarioNAME[0];
+        element.add(opt1, null);
+      }
+    }
+    CACHE_data = "";
+    CACHE_data_scenario_NAME = "";
+    CACHE_data_device_pin = "";
+    CACHE_data_deviceType = "";
+    CACHE_data_toogleState = "";
+
+    function whenDone_getJSON_get_a_scenario_NAME() {
+      console.log("CACHE_data_scenario_NAME");
+      console.log(CACHE_data_scenario_NAME);
+      console.log(CACHE_data_scenario_NAME);
+      let btn = document.createElement("div");
+      //GET DEVICE NAME
+      var newContent = document.createTextNode(CACHE_data_scenario_NAME);
+      btn.appendChild(newContent);
+      btn.id = CACHE_data_device_pin;
+      btn.className = "petitcontainer";
+      btn.setAttribute("device_type", CACHE_data_deviceType);
+      if(CACHE_data_toogleState == "ON") {
+        btn.innerHTML += "<label class='switch'><input type='checkbox' checked='checked' checkstate=" + CACHE_data_toogleState + " onclick='myFunction(this)'><span class='slider round'></span></label>";
+      }
+      if(CACHE_data_toogleState == "OFF") {
+        btn.innerHTML += "<label class='switch'><input type='checkbox' checkstate=" + CACHE_data_toogleState + " onclick='myFunction(this)'><span class='slider round'></span></label>";
+      }
+      var theDiv = document.getElementById("right1");
+      theDiv.appendChild(btn);
+      MayIaskForDeviceName = 0;
+    }
+
+    function whenDone_getJSON_get_a_scenario() {
+      console.log(":::::" + CACHE_data);
+      CACHE_data = CACHE_data.split(" ");
+      for(var i = 1; i < CACHE_data.length; i++) {
+        var functionPythonParam = "";
+        //var valueSelected = this.value;     
+        const functionPythonName = 'get_device_name';
+        var devicePin = "";
+        var deviceType = "";
+        var toogleState = ""
+        var MayIaskForDeviceName = 0;
+        if(CACHE_data[i].includes("rm_dev")) {
+          console.log("ADDING REMOTE DEVICE " + CACHE_data[i]);
+          var cache = CACHE_data[i].replace("rm_dev", "");
+          if(CACHE_data[i].includes("ON")) {
+            toogleState = "ON"
+          } else {
+            toogleState = "OFF"
+          }
+          cache = cache.replace("ON", "");
+          cache = cache.replace("OFF", "");
+          functionPythonParam = "rm_dev=" + cache;
+          devicePin = cache;
+          deviceType = "rm_dev";
+          MayIaskForDeviceName = 1;
+        }
+        //modification
+        if(CACHE_data[i].includes("rm_DP")) {
+          console.log("ADDING REMOTE DEVICE 3 " + CACHE_data[i]);
+          var cache = CACHE_data[i].replace("rm_DP", "");
+          if(CACHE_data[i].includes("ON")) {
+            toogleState = "ON"
+          } else {
+            toogleState = "OFF"
+          }
+          cache = cache.replace("ON", "");
+          cache = cache.replace("OFF", "");
+          functionPythonParam = "rm_DP=" + cache;
+          devicePin = cache;
+          deviceType = "rm_DP";
+          MayIaskForDeviceName = 1;
+        }
+        //modification
+        if(CACHE_data[i].includes("not_dev_rm")) {
+          console.log("ADDING  NOT REMOTE DEVICE " + CACHE_data[i]);
+          var cache = CACHE_data[i].replace("not_dev_rm", "");
+          if(CACHE_data[i].includes("ON")) {
+            toogleState = "ON"
+          } else {
+            toogleState = "OFF"
+          }
+          cache = cache.replace("ON", "");
+          cache = cache.replace("OFF", "");
+          functionPythonParam = "not_dev_rm=" + cache;
+          devicePin = cache;
+          deviceType = "not_dev_rm";
+          MayIaskForDeviceName = 1;
+        }
+        if(CACHE_data[i].includes("wait")) {
+          console.log("ADDING WAIT BLOCK");
+          var timeWait = CACHE_data[i].replace("wait", "");
+          MayIaskForDeviceName = 2;
+        }
+        //****************************
+        //asking for device name ...
+        //****************************
+        if(MayIaskForDeviceName == 1) {
+          $.getJSON(functionPythonName.concat("/", functionPythonParam), {}, function(cache) {
+            CACHE_data_toogleState = toogleState;
+            CACHE_data_scenario_NAME = cache;
+            CACHE_data_device_pin = devicePin;
+            CACHE_data_deviceType = deviceType;
+            whenDone_getJSON_get_a_scenario_NAME();
+          });
+        }
+        //add time block
+        if(MayIaskForDeviceName == 2) {
+          //console.log(CACHE_data);
+          let btn = document.createElement("div");
+          btn.className = "petitcontainerwait";
+          //RECUPERER DEVICE NAME
+          btn.innerHTML += "<div class='wait_time_title'>Wait for</div><input id='wait' type='number' class='wait_time_input' name='number' value=" + timeWait + " placeholder='time' required='required' pattern='^[a-zA-Z0-9_ ]+$''>";
+          var theDiv = document.getElementById("right1");
+          theDiv.appendChild(btn);
+          MayIaskForDeviceName = 0;
+        }
+      }
+    }
+    $('#scenario_selector').on('change', function() {
+      scenario_selector_on_change(this);
+    });
+
+    function scenario_selector_on_change(obj) {
+      $('#ScenarioName').val('');
+      $("#right1 > div.petitcontainer").remove();
+      $("#right1 > div.petitcontainerwait").remove();
+      valueSelected = obj.value;
+      if(valueSelected != "create") {
+        $('#ScenarioName').prop("readonly", true);
+        const functionPythonName = 'get_a_scenario';
+        const functionPythonParam = valueSelected;
+        console.log("##########################    " + valueSelected);
+        ScenarioName.value = $('#scenario_selector :selected').text();
+        $.ajaxSetup({
+          async: false
+        });
+        $.getJSON(functionPythonName.concat("/", functionPythonParam), {}, function(data) {
+          CACHE_data = data;
+          whenDone_getJSON_get_a_scenario();
+        });
+        $.ajaxSetup({
+          async: true
+        });
+      } else {
+        $('#ScenarioName').prop("readonly", false);
+      }
+    }
+    //récupération du JSON à l'arrivé sur la page
+    myJsonCleaned = '{{ name }}'.replaceAll('&#34;', '"');
+    const myArr = JSON.parse(myJsonCleaned);
+    $.ajaxSetup({
+      async: false
+    });
+    for(var i = 0; i < myArr.devices.length; i++) {
+      let btn = document.createElement("div");
+      var newContent = document.createTextNode(myArr.devices[i].device_name);
+      btn.appendChild(newContent);
+      btn.id = myArr.devices[i].GPIO_pin;
+      btn.className = "petitcontainer";
+      //btn.device_type = myArr.devices[i].device_type;
+      btn.setAttribute("device_type", myArr.devices[i].device_type);
+      //console.log("DEV TYPE  " + btn.device_type);
+      btn.innerHTML += "<label class='switch'><input type='checkbox' checked='checked' checkstate='ON' onclick='myFunction(this)'><span class='slider round'></span></label>";
+      //btn.GPIO_pin = myArr.devices[i].GPIO_pin;
+      var theDiv = document.getElementById("left1");
+      theDiv.appendChild(btn);
+    }
+    $.ajaxSetup({
+      async: true
+    });
+    dragula([document.getElementById("left1"), document.getElementById("right1")], {
+      copy: function(el, source) {
+        return source === document.getElementById("left1")
+      },
+      accepts: function(el, target) {
+        return target !== document.getElementById("left1")
+      },
+      removeOnSpill: true
+    });
+  }
+
+  function myFunction(obj) {
+    //alert(obj.nodeName);
+    //alert(obj.getAttribute('checkstate'));
+    if(obj.getAttribute('checkstate') == "ON") {
+      obj.setAttribute('checkstate', "OFF");
+      console.log("SET toogle off : " + obj.getAttribute('checkstate'));
+    } else if(obj.getAttribute('checkstate') == "OFF") {
+      obj.setAttribute('checkstate', "ON");
+      console.log("SET toogle on : " + obj.getAttribute('checkstate'));
+    }
+  }
+  //-----------------------------------------------------
+  //EXIT, OR SAVE THE SCENARIO IN THE FILE (CREATE A NEW SCENARIO)
+  //-----------------------------------------------------
+  function quit_scenario() {
+    document.location.href = "/";
+  }
+
+  function save() {
+    if($("#ScenarioName").val() != "" && $("#ScenarioName").val() != null) {
+      //if($("#wait").val() != "" && $("#wait").val() != null)
+      if($("#right1 > div.petitcontainerwait > #wait").val() != "" && $("#right1 > div.petitcontainerwait > #wait").val() != null){
+        $.ajaxSetup({
+          async: false
+        });
+        if(valueSelected != -1) {
+          const functionPythonName = 'erase_a_scenario';
+          const functionPythonParamGPIOPintoRemove = "erase_this" + valueSelected;
+          $.getJSON(functionPythonName.concat("/", functionPythonParamGPIOPintoRemove), {}, function(data) {});
+        }
+        $.ajaxSetup({
+          async: true
+        });
+        // get the sort of the div (device or bloc wait)               
+        var c = document.querySelectorAll("#right1 > div.petitcontainer, #right1 > div.petitcontainerwait > #wait");
+        console.log(c);
+        var pinOrder = [];
+        var strPinOrder = ScenarioName.value + " ";
+        for(var i = 0; i < c.length; i++) {
+          if(c[i].id == "wait") {
+            //console.log(c[i].id+c[i].value); 
+            pinOrder.push("#" + c[i].value);
+            strPinOrder = strPinOrder + c[i].id + c[i].value;
+          } else {
+            //toogleSwitch = document.getElementById(c[i].id).children[0].children[0];
+            //on recupere le toogle DANS LA div ACTUELLE
+            console.log("----------------------------------");
+            console.log(c[i].children[0].children[0].getAttribute('checkstate'));
+            var etattoogle = c[i].children[0].children[0].getAttribute('checkstate');
+            //toogleSwitch = document.querySelector("div#"+c[i].id+">label")
+            //console.log($("input[type='checkbox']").val());
+            //console.log("toogle switch state on sending : "+toogleSwitch.getAttribute('checkstate'));
+            console.log(c[i]);
+            if(etattoogle == "ON") {
+              console.log("toogle is on");
+              strPinOrder = strPinOrder + c[i].getAttribute('device_type') + "ON" + c[i].id;
+            }
+            if(etattoogle == "OFF") {
+              console.log("toogle is off");
+              strPinOrder = strPinOrder + c[i].getAttribute('device_type') + "OFF" + c[i].id;
+            }
+          }
+          strPinOrder = strPinOrder + " ";
+        }
+        console.log(strPinOrder);
+        const functionPythonName = 'save_scenario';
+        const functionPythonParam = strPinOrder;
+        $.getJSON(functionPythonName.concat("/", functionPythonParam), {}, function(data) {
+          if(data == 0) {
+            console.log("saved");
+          } else {
+            console.log("error : scenario was not saved");
+          }
+        });
+        setTimeout(function() {
+          document.getElementById('exitsave').submit();
+        }, 500);
+      }
+      else {
+        alert("Enter number in seconds for waiting time in SCENARIO")
+      }
+    } else {
+      alert("Enter a scenario name");
+    }
+  }
+  </script>
+  <form action="/index/" method="post" id="exitsave">
+  </form>
+  <div class="petit_container_5">
+    <div class="petit_container_2">
+      <select name="scenario" id="scenario_selector">
+        <option value="create">I want to create a new scenario</option>
+      </select>
+    </div>
+    <div class="petit_container_2">
+      <label for="ScenarioName">Scenario Name </label>
+      <input type="text" id="ScenarioName" maxlength="25">
+    </div>
+    <div class="petit_container_3">
+      <button type="button" class="button_save" onclick="save()">Save </button>
+      <button type="button" class="button_save" onclick="quit_scenario()">Exit </button>
+    </div>
+  </div>
+  </br>
+  </br>
+  <div class='two_container'>
+    <div id='left1' class='containerLeft'>
+      <p class="title_div_left">DEVICE LIST </p>
+      <div class='petitcontainerwait'>
+        <div class="wait_time_title">Wait for </div>
+        <input id="wait" type="number" class="wait_time_input" name="number" value="" placeholder="time" required="required" pattern="^[a-zA-Z0-9_ ]+$">
+      </div>
+    </div>
+    <div id='right1' class='containerRight'>
+      <p class="title_div_right">SCENARIO </p>
+    </div>
+  </div>
+  </div>
+</body>
+
+</html>

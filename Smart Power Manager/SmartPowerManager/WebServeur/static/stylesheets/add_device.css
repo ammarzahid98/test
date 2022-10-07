@@ -1,0 +1,141 @@
+
+@font-face{
+font-family: Montserrat;
+src: url('Montserrat-Medium.ttf');
+}
+
+
+  body {
+    background: #505050;
+    	
+  }
+
+
+.title{
+  text-align : center;
+   margin-top: 15px;
+  font-size: 40px;
+}
+
+#dev_type_select{
+
+    width: 300px;
+    height: 45px;
+    background: #363636;
+    border: 1px solid #FFE600;
+    box-sizing: border-box;
+    box-shadow: 7px 7px 4px #181818;
+    border-radius: 20px;
+
+    margin-top:10px;
+    
+  font-family: Montserrat;
+	font-style: normal;
+	font-size: 20px;
+
+	align-items: left;
+	color: #FFFFFF;
+  
+  text-align : left;
+  padding-left : 12px;
+
+
+
+}
+
+#device_selector{
+
+    width: 90%;
+    height: 45px;
+    background: #363636;
+    border: 1px solid #FFE600;
+    box-sizing: border-box;
+    box-shadow: 7px 7px 4px #181818;
+    border-radius: 20px;
+
+    margin-top:23px;
+    margin-bottom: 23px;
+    
+  font-family: Montserrat;
+  font-style: normal;
+  font-size: 20px;
+
+  align-items: left;
+  color: #FFFFFF;
+  
+  text-align : left;
+  padding-left : 12px;
+
+
+
+}
+
+  .form {
+   
+
+    width: 430px;
+    height: 828px;
+    background: #363636;
+    border: 1px solid #FFE600;
+    box-sizing: border-box;
+    box-shadow: 7px 7px 4px #181818;
+    border-radius: 20px;
+    margin-left:618px;
+    margin-top:20px;
+    
+  font-family: Montserrat;
+	font-style: normal;
+	font-size: 20px;
+
+	align-items: left;
+	color: #FFFFFF;
+  
+  text-align : left;
+  padding-left : 12px;
+
+  }
+  
+button{
+
+
+  width: 296px;
+  height: 40px;
+  
+  text-align: center;
+  background: #363636;
+  border: 1px solid #FFAB66;
+  box-sizing: border-box;
+  box-shadow: 7px 7px 4px #181818;
+  border-radius: 10px;
+  margin-left:44px;
+  margin-top:20px;
+    
+  font-family: Montserrat;
+	font-style: normal;
+	font-size: 25px;
+
+	align-items: center;
+	color: #FFFFFF;
+
+}
+  
+input {
+    
+  font-size: 17px;
+  margin-top: 13px;
+  width: 300px;
+  height: 45px;
+  background: #363636;
+  border: 1px solid #FFE600;
+  box-sizing: border-box;
+  box-shadow: 7px 7px 4px #181818;
+  border-radius: 20px;
+  align-items: left;
+  color: #FFFFFF;
+  text-align : left;
+  
+}
+  
+  
+
+  

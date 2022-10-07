@@ -1,0 +1,616 @@
+@font-face{
+font-family: Montserrat;
+src: url('Montserrat-Medium.ttf');
+}
+
+
+
+
+
+
+body {
+	
+	background: #505050;
+
+}
+
+#inline_section{
+
+	display: flex;
+	flex-wrap: wrap;
+	margin-bottom: 10px;
+
+
+}
+
+#title_conf_file{
+
+    font-family: Montserrat;
+    font-style: normal;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    color: #FFFFFF;
+    padding: 10px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.ip_input {
+    
+  font-size: 17px;
+  margin-top: 13px;
+  margin-bottom: 13px;
+  width: 300px;
+  height: 45px;
+  background: #363636;
+  border: 1px solid #FFE600;
+  box-sizing: border-box;
+  box-shadow: 7px 7px 4px #181818;
+  border-radius: 20px;
+  align-items: left;
+  color: #FFFFFF;
+  text-align : left;
+  
+}
+
+#saveboot{
+	margin-top: 16px;
+}
+
+#form_ip_settings{
+
+	margin-left: 40px;
+
+}
+
+.label_css_settings {
+
+font-family: Montserrat;
+font-style: normal;
+font-size: 20px;
+color: #FFFFFF;
+text-align: left;
+
+}
+
+.export_import_section1{
+	
+	width: 564px;
+	height: 128px;
+	background: #363636;
+	border: 1px solid #FFE600;
+	box-sizing: border-box;
+	box-shadow: 7px 7px 4px #181818;
+	border-radius: 22px;
+	margin-left: 10px;
+
+	
+}
+
+.export_import_section2{
+	
+	width: 405px;
+	height: 128px;
+	background: #363636;
+	border: 1px solid #FFE600;
+	box-sizing: border-box;
+	box-shadow: 7px 7px 4px #181818;
+	border-radius: 22px;
+	margin-left: 10px;
+
+	
+}
+
+
+.a_button_like{
+
+	padding: 10px 6px 10px 6px;
+  text-decoration: none;
+	border-radius: 7px;
+	font-family: Montserrat;
+	font-style: normal;
+	font-weight: 500;
+	font-size: 20px;
+	line-height: 29px;
+	border: none;
+  outline:none;
+  margin: 10px;
+	background-color: #706f6f;
+	color: #FFFFFF;
+	margin-bottom: 10px;
+
+
+
+}
+
+.removeDevice, .removeScenario{
+
+	float: right;
+
+	margin-top: 10px;
+	margin-bottom: -74px;
+	margin-right: 10px;
+	margin-left: -10px;
+	background: #FF0000;
+	border-radius: 7px;
+	width: 41px;
+	height: 27px;
+	border: none;
+    outline:none;
+	color: #FFFFFF;
+	font-size: 16px;
+	font-family: Montserrat;
+	z-index: 999;
+  position:relative;
+}
+
+.csstypediv1{
+	
+	width: 307px;
+	height: 180px;
+	background: #363636;
+	border: 1px solid #FFE600;
+	box-sizing: border-box;
+	box-shadow: 7px 7px 4px #181818;
+	border-radius: 22px;
+	
+}
+
+.csstypediv4{
+	
+	width: 120px;
+	height: 71px;
+	
+	border: 1px solid #FFE600;
+	box-sizing: border-box;
+	box-shadow: 7px 7px 4px #181818;
+	border-radius: 22px;
+
+	
+}
+
+.sub_div_title, .sub_div_title_IP{
+
+	font-family: Montserrat;
+	font-style: normal;
+	font-size: 16px;
+	display: flex;
+	align-items: center;
+	color: #FFFFFF;
+	display: inline-block;
+	margin-right: 10px;
+
+
+}
+
+.details_div{
+
+	font-family: Montserrat;
+	font-style: normal;
+	font-size: 18px;
+	display: flex;
+	align-items: center;
+	color: #FFFFFF;
+	margin-left: 28px;
+
+
+
+}
+
+.submit_upload_button{
+
+
+	width: auto;
+	height: 36px;
+	border-radius: 7px;
+
+	font-family: Montserrat;
+	font-style: normal;
+	font-weight: 500;
+	font-size: 20px;
+	line-height: 29px;
+
+
+	border: none;
+  outline:none;
+
+  margin-right: 28px;
+	
+	
+	background-color: #706f6f;
+	color: #FFFFFF;
+
+}
+
+
+
+
+
+.scenario_button_css{
+
+
+	width: 67px;
+	height: 49px;
+	border-radius: 7px;
+
+	font-family: Montserrat;
+	font-style: normal;
+	font-weight: 500;
+	font-size: 21px;
+	line-height: 29px;
+
+
+	border: none;
+  outline:none;
+  margin-left: 28px;
+  margin-right: 28px;
+	margin-top: 11px;
+	
+	background-color: #FF7144;
+	color: #FFFFFF;
+
+}
+
+.css_forward_button, .css_edit_mode_button{
+
+
+	width: 160px;
+	height: 49px;
+	border-radius: 7px;
+
+	font-family: Montserrat;
+	font-style: normal;
+	font-weight: 500;
+	font-size: 20px;
+	line-height: 29px;
+
+	margin-left: 10px;
+	margin-top:  30px;
+	margin-bottom:  21px;
+	border: none;
+    outline:none;
+	
+	background-color: #706f6f;
+	color: #FFFFFF;
+
+
+}
+
+.status{
+	position:fixed;
+	bottom: 0;
+	right: 0;
+	height: 30px;
+	width: 200px;
+	border-radius: 7px;
+
+	font-family: Montserrat;
+	font-style: normal;
+	font-weight: 500;
+	font-size: 12px;
+	line-height: 29px;
+
+	
+
+	background-color: #706f6f;
+	
+}
+
+.status_label{
+	margin-left: 10px;
+	color: #FFFFFF;
+}
+
+.status_box{
+	position:fixed;
+	bottom:2.5px;
+	right: 20px;
+	height: 25px;
+	width: 100px;
+	border-radius: 5px;
+	text-align: center;
+
+	color: #FFFFFF;
+	background-color:#32B505 ;
+}
+
+
+
+
+
+.gpiobutton{
+
+	width: 126px;
+	height: 49px;
+	border-radius: 7px;
+
+	font-family: Montserrat;
+	font-style: normal;
+	font-weight: 500;
+	font-size: 20px;
+	line-height: 29px;
+	align-items: center;
+	text-align: center;
+
+	background-color: #7C7C7C;
+	color: #FFFFFF;
+	border: none;
+    outline:none;
+    float:left;
+	
+	margin-left: 16px;
+}
+
+.not_dev_rm{
+
+	text-align: center;
+	width:25px; /*width of your image*/
+	height:25px; /*height of your image*/
+	background-image:url('IP_icon_buck_size.png');
+	margin-left:3px;
+	margin-top:3px; /* If you want no margin */
+	padding:0; /*if your want to padding */
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.rm_dev{
+
+	text-align: center;
+	width:25px; /*width of your image*/
+	height:25px; /*height of your image*/
+	background-image:url('CC_icon_buck_size.jpg');
+	margin-left:3px;
+	margin-top:3px; /* If you want no margin */
+	padding:0; /*if your want to padding */
+	background-repeat: no-repeat;
+	background-position: center;
+
+}
+
+.rm_DP{
+
+	text-align: center;
+	width:25px; /*width of your image*/
+	height:25px; /*height of your image*/
+	background-image:url('DP_icon_buck_size.png');
+	margin-left:3px;
+	margin-top:3px; /* If you want no margin */
+	padding:0; /*if your want to padding */
+	background-repeat: no-repeat;
+	background-position: center;
+
+}
+
+.rm_dev, .rm_DP, .not_dev_rm, .sub_div_title{
+
+  padding: 5px;
+  display: inline-block;
+  vertical-align: middle
+}
+
+.ping_status {
+  height: 17px;
+  width: 17px;
+  background-color: #FFEB38;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.rebootbutton{
+
+	width: 126px;
+	height: 49px;
+	border-radius: 7px;
+
+	font-family: Montserrat;
+	font-style: normal;
+	font-weight: 500;
+	font-size: 20px;
+	line-height: 29px;
+	align-items: center;
+	text-align: center;
+	background-color: #FF7144;
+	color: #FFFFFF;
+    border: none;
+    outline:none;
+    float:right;
+    margin-right: 14px;
+
+
+
+}
+
+#device_button_div{
+
+
+display: flex;
+flex-wrap: wrap;
+
+}
+
+.forward_button_div{
+
+
+display: flex;
+
+
+}
+
+
+.setting_IP_css{
+
+	
+	width: 405px;
+	height: 250px;
+	background: #363636;
+	border: 1px solid #FFE600;
+	box-sizing: border-box;
+	box-shadow: 7px 7px 4px #181818;
+	border-radius: 22px;
+	margin-left: 10px;
+	margin-top: 12px;
+
+
+
+}
+
+
+.forward_button_div2{
+
+display: flex;
+
+
+}
+
+
+#setting_section_css{
+
+	
+	width: 1151px;
+	height: 444px;
+	background: #363636;
+	
+	box-sizing: border-box;
+	box-shadow: 7px 7px 4px #181818;
+	border-radius: 22px;
+	margin-left: 10px;
+
+margin-top: 30px;
+margin-bottom: 30px;
+
+
+
+}
+
+
+#other_button_div{
+
+
+display: flex;
+flex-wrap: wrap;
+
+}
+
+#other_button_div > div {
+
+  margin: 10px;
+
+}
+
+
+#device_button_div > div {
+
+  margin: 10px;
+
+}
+
+.css_ping_div{
+
+	width: 340px;
+	height: 49px;
+	margin-left: 10px;
+
+
+}
+
+@media only screen and (max-width: 600px) {
+
+  .forward_button_div, .sub_div_title_IP, .details_div {
+  display: none;
+	}
+
+	.sub_div_title{
+
+		display: block;
+		padding: 0px;
+		font-size: 14px;
+		text-align: center;
+		white-space: normal;
+		word-wrap: break-word;
+	}
+
+	.csstypediv1{
+		width: 40%;
+
+	}
+	.not_dev_rm{
+
+	width:20px; /*width of your image*/
+	height:20px; /*height of your image*/
+	background-image:url('IP_icon_mobile_phone.png');
+}
+
+.rm_dev{
+
+	width:20px; /*width of your image*/
+	height:20px; /*height of your image*/
+	background-image:url('CC_icon_mobile_phone.jpg');
+}
+
+.rm_DP{
+
+	width:20px; /*width of your image*/
+	height:20px; /*height of your image*/
+	background-image:url('DP_icon_mobile_phone.png');
+}
+
+.css_ping_div{
+    width: 17px;
+    height: 17px;
+    margin-bottom: 5px;
+    text-align: center;
+
+ }
+
+ .scenario_button_css{
+ 	font-size: 16px;
+ }
+
+ .gpiobutton{
+ 	width: 90%;
+ 	height: 34px;
+ 	font-size: 15px;
+ 	margin-left: 0px;
+ 	float: none;
+ }
+
+ .scenario_button_css{
+ 
+ 	margin: 15px;
+
+
+ }
+
+ .csstypediv4{
+ 	height: auto;
+ }
+
+ .rebootbutton{
+ 	width: 90%;
+ 	height: 34px;
+ 	font-size: 15px;
+ 	margin-left: 0px;
+ 	float: none;
+ 	margin-right: 0px;
+ 	margin-top: 10px;
+ 	text-align: center;
+ }
+.csstypediv3{
+	text-align: center;
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
+

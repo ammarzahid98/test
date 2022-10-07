@@ -1,0 +1,460 @@
+<!doctype html>
+<html>
+
+<head>
+	<title>SmartPowerManager</title>
+	<meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/style_index.css') }}" />
+	<script type="text/javascript" src="{{ url_for('static', filename = 'jquery.min.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename = 'socket.io.js') }}"></script>
+</head>
+
+<body>
+	<script>
+	</script>
+	<div class="forward_button_div">
+		<button type="submit" class="css_edit_mode_button" onclick="clickedOnButtonEnterQuitEditMode()">Edit mode</button>
+	</div>
+	<div id="setting_section_css">
+		<div class="forward_button_div2">
+			<form action="/scenario/" method="post">
+				<button name="forwardBtn" type="submit" class="css_forward_button">New scenario </button></form>
+			<form action="/newdevice/" method="post">
+				<button type="submit" class="css_forward_button">New device </button></form>
+		</div>
+		<div id="inline_section">
+			<div class="export_import_section1">
+				<p>
+					<div id="title_conf_file">Save configuration file</div><br><br>
+					<a class="a_button_like" href="{{ url_for('.download_device_file') }} ">Save device file</a>
+					<a class="a_button_like" href="{{ url_for('.download_scenario_file') }}">Save scenario file</a>
+					<a class="a_button_like" href="{{ url_for('.download_both') }}">Save both</a><br>
+				</p>
+			</div>
+			<div class="export_import_section2">
+				<p>
+					<div id="title_conf_file">Upload configuration file : do not change filename </div>
+					<form action="/uploader" method="POST" onsubmit="return confirm('CAUTION : this will erase the existing file?');" enctype="multipart/form-data">
+						<input required="required" class="hide_file" type="file" name="file" accept=".txt,.zip" />
+						<input class="submit_upload_button" value="Upload" type="submit" />
+					</form>
+				</p>
+			</div>
+		</div>
+		<div id="inline_section">
+			<div class="setting_IP_css">
+				<p>
+					<div id="form_ip_settings">
+						<form action="/saveip" method="post">
+							<label class="label_css_settings" for="second_board_ip">IP address of second relay board</label><br>
+							<input class="ip_input" type="text" id="second_board_ip" name="secondBoardIpSettings" value="{{ secondBoardIpSettings }}" title="Enter the IP adress of the second RPi, or 0.0.0.0 if no second board" pattern="^(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|null$"><br>
+							<label class="label_css_settings" for="third_board_ip">IP address of third relay board</label><br>
+							<input class="ip_input" type="text" id="third_board_ip" name="thirdBoardIpSettings" value="{{ thirdBoardIpSettings }}" title="Enter the IP adress of the third RPi, or 0.0.0.0 if no third board" pattern="^(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|null$">
+							<button type="text" class="submit">Save IP address Settings</button>
+						</form>
+					</div>
+				</p>
+			</div>
+			<div class="setting_IP_css">
+				<div id="form_ip_settings">
+					<form action="/saveboot" id="saveboot" method="post">
+						<label id="labelboot" class="label_css_settings">Scenario to start on boot</label><br>
+						<select name="scenario_boot_selector" id="scenario_boot_selector_id">
+							<option value="noscenarioonboot">Nothing on boot</option>
+						</select>
+						<button type="text" class="submit">Save boot settings</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
+	<div id="other_button_div"></div>
+	<div id="device_button_div"></div>
+	<div id="console_log"></div>
+	<div class="status">
+		<label class="status_label">Status :</label>
+		<div id="status_box" class="status_box">
+			<label>Ready</label>
+		</div>
+	</div>
+
+	<script>
+	/*$.ajaxSetup({async: false})
+
+			$.getJSON("getbootsettings", {}
+			,function(cache) {
+
+				//var dd1 = document.getElementById("scenario_boot_selector_id")
+				//dd1.value = OnAll;
+
+
+				console.log("BOOT BOOT  BOOT BOOT BOOT BOOT BOOT BOOT : ")
+				$("#scenario_boot_selector_id").val('OffAll')
+				$("#scenario_boot_selector_id").change();
+			});
+
+
+
+			$.ajaxSetup({async: true})*/
+	var edidmode = 1;
+
+	function sleep(ms) {
+		return new Promise(resolve => setTimeout(resolve,ms));	
+	}
+
+	//-----------------------------------------------------
+	//QUIT OR ENTER EDIT MODE
+	//-----------------------------------------------------   
+	function clickedOnButtonEnterQuitEditMode() {
+		sessionStorage.setItem('EnteredInSettings', 'FALSE');
+		enterquitedidmode();
+	}
+
+	function enterquitedidmode(edidmodeParam = edidmode) {
+		console.log("function edit mode");
+		if(edidmodeParam == 1) {
+			edidmode = 0;
+			console.log("quit edit mode ");
+			$('.removeScenario').hide(); // hides
+			$('.removeDevice').hide(); // hides
+			$('.css_forward_button').hide(); // hides
+			$('.details_div').hide(); // hides
+			$('#setting_section_css').hide(); // hides
+			var allDivDevice = document.getElementsByClassName('csstypediv1');
+			for(let i = 0; i < allDivDevice.length; i++) {
+				allDivDevice[i].style.height = "180px";
+			}
+		} else if(edidmodeParam == 0) {
+			if(sessionStorage.getItem("enterquitedidmode") != "OK") {
+				var response = window.prompt("Please enter the password to edit");
+			}
+			if(response == "CES2023" || sessionStorage.getItem("enterquitedidmode") == "OK") {
+				edidmode = 1;
+				sessionStorage.setItem("enterquitedidmode", "OK");
+				console.log("enter edit mode");
+				$('.removeScenario').show(); // hides
+				$('.removeDevice').show(); // hides
+				$('.css_forward_button').show(); // hides
+				$('.details_div').show(); // hides
+				$('#setting_section_css').show(); // hides
+				var allDivDevice = document.getElementsByClassName('csstypediv1');
+				for(let i = 0; i < allDivDevice.length; i++) {
+					allDivDevice[i].style.height = "285px";
+				}
+			} else {
+				alert("Wrong password");
+			}
+		}
+	}
+	$(document).ready(function() {
+		$("#scenario_boot_selector_id").val("{{scenarioOnboot}}")
+		$("#scenario_boot_selector_id").change();
+		//
+		//-----------------------------------------------------
+		//PING STATUS SOCKET CLIENT
+		//-----------------------------------------------------	
+		const socket = io.connect();
+		socket.on("connect", () => {
+			console.log("ping_status _server connected");
+		});
+		socket.on("message", data => {
+			console.log(data);
+			var cache_data = data;
+			if(cache_data.includes("No_IP")) {
+				//Do nothing, there is to no dot to change the color
+			} 
+			else if(cache_data.includes("FALSE")) {
+				console.log(("ping_status" + cache_data.replace("FALSE", "")).toString())
+				if(document.getElementById("ping_status" + cache_data.replace("FALSE", ""))) {
+					document.getElementById(("ping_status" + cache_data.replace("FALSE", "")).toString()).style.background = '#FF0000';
+				}
+			} 
+			else if(cache_data.includes("TRUE")) {
+				if(document.getElementById("ping_status" + cache_data.replace("TRUE", ""))) {
+					document.getElementById(("ping_status" + cache_data.replace("TRUE", "")).toString()).style.background = '#32B505';
+				}
+			} 
+			else if(cache_data.includes("GPIO_ON:")) {
+				document.getElementById((cache_data.replace("GPIO_ON:", "")).toString()).style.background = '#FF0000';
+				document.getElementById((cache_data.replace("GPIO_ON:", "")).toString()).innerHTML = 'OFF';
+			} 
+			else if(cache_data.includes("GPIO_OFF:")) {
+				document.getElementById((cache_data.replace("GPIO_OFF:", "")).toString()).style.background = '#32B505';
+				document.getElementById((cache_data.replace("GPIO_OFF:", "")).toString()).innerHTML = 'ON';
+			} 
+			else if(cache_data.includes("reloadWebPage")) {
+				// location.reload();
+			}
+		});
+		if(sessionStorage.getItem('EnteredInSettings') != "TRUE") {
+			console.log("SESSION_VAR_EnteredInSettings = " + sessionStorage.getItem('EnteredInSettings'))
+			enterquitedidmode();
+		} else {
+			var allDivDevice = document.getElementsByClassName('csstypediv1');
+			for(let i = 0; i < allDivDevice.length; i++) {
+				allDivDevice[i].style.height = "285px";
+			}
+		}
+		//Function calling flask to change GPIO state when user click on a button
+		//If click on element with button type
+		//-----------------------------------------------------
+		//CHANGE GPIO STATE FUNCTION WHEN DEVICE BUTTON CLICK
+		//-----------------------------------------------------
+		//all boutonremove avec id genre remove pour les faire apparaitre en mode edtion remove
+		$("button").click(function() {
+			//to be sure that the button touched is a device 
+			if(this.className == "removeDevice") {
+				console.log("removing a device");
+				const functionPythonName = 'remove_device';
+				const functionPythonParamGPIOPintoRemove = this.device_name;
+				$.getJSON(functionPythonName.concat("/", functionPythonParamGPIOPintoRemove), {}, function(data) {
+					sessionStorage.setItem('EnteredInSettings', 'TRUE');
+					document.location.reload()
+				});
+			} else if(this.className == "removeScenario") {
+				console.log("removing a scenario");
+				const functionPythonName = 'remove_scenario';
+				const functionPythonParamGPIOPintoRemove = this.id;
+				$.getJSON(functionPythonName.concat("/", functionPythonParamGPIOPintoRemove), {}, function(data) {
+					sessionStorage.setItem('EnteredInSettings', 'TRUE');
+					document.location.reload()
+				});
+			} else if(this.className == "rebootbutton") {
+				console.log("rebooting a device");
+				const functionPythonName = 'reboot';
+				const functionPythonParamGPIOPin = this.GPIO_pin + this.device_type + " " + this.REBOOT_time + " " + this.id;
+				const buttonRebootId = this.id;
+				CorrespondigbuttonONOff = buttonRebootId.replace('reb', '');
+				this.style.background = '#FFC300 ';
+				$('.rebootbutton').prop('disabled', true)
+				document.getElementById("status_box").style.background = '#FFC300';
+				document.getElementById("status_box").innerHTML = "Running";
+				document.getElementById(CorrespondigbuttonONOff.toString()).style.background = '#FFC300';
+				document.getElementById(CorrespondigbuttonONOff.toString()).innerHTML = "WAIT";
+				document.getElementById(CorrespondigbuttonONOff.toString()).disabled = true;
+				if (myArr.devices[CorrespondigbuttonONOff].IP_adress != "" || myArr.devices[CorrespondigbuttonONOff].IP_adress != null){
+					sleep(21500).then(() => {
+						document.getElementById(CorrespondigbuttonONOff.toString()).style.background = '#32B505';
+						document.getElementById(CorrespondigbuttonONOff.toString()).innerHTML = "ON";} );
+				}
+				else {
+					document.getElementById(CorrespondigbuttonONOff.toString()).style.background = '#32B505';
+					document.getElementById(CorrespondigbuttonONOff.toString()).innerHTML = "ON";
+					document.getElementById(CorrespondigbuttonONOff.toString()).disabled = true;
+				}
+				//call flask function
+				$.getJSON(functionPythonName.concat("/", functionPythonParamGPIOPin), {}, function(data) {
+					console.log(data);
+					document.getElementById(CorrespondigbuttonONOff.toString()).style.background = '#FF0000';
+					document.getElementById(("reb" + CorrespondigbuttonONOff).toString()).style.background = '#FF7144';
+					document.getElementById(CorrespondigbuttonONOff.toString()).disabled = false;
+					document.getElementById(CorrespondigbuttonONOff.toString()).innerHTML = "OFF";
+					$('.rebootbutton').prop('disabled', false)
+					document.getElementById("status_box").style.background = '#32B505';
+					document.getElementById("status_box").innerHTML = "Ready";
+				});
+			}
+			else {
+				if(this.GPIO_pin != undefined && this.GPIO_pin != "scenarioBtn") {
+					const functionPythonName = 'ON_OFF_GPIO';
+					const functionPythonParamGPIOPin = this.GPIO_pin + this.device_type + " " + this.id;
+					const buttonId = this.id;
+					document.getElementById("status_box").style.background = '#FFC300';
+					document.getElementById("status_box").innerHTML = "Running";
+					document.getElementById(buttonId.toString()).innerHTML = "WAIT";
+					document.getElementById(buttonId.toString()).style.background = '#FFC300';
+					$('.gpiobutton').prop('disabled', true)
+					//call flask function
+					$.getJSON(functionPythonName.concat("/", functionPythonParamGPIOPin), {}, function(data) {
+						//data is the current (= of button just clicked) GPIO state : 0 or 1
+						console.log(data);
+						console.log(buttonId);
+						if(data == 0) {
+							document.getElementById(buttonId.toString()).innerHTML = "OFF"
+							document.getElementById(buttonId.toString()).style.background = '#FF0000';
+						}
+						if(data == 1) {
+							document.getElementById(buttonId.toString()).innerHTML = "ON"
+							document.getElementById(buttonId.toString()).style.background = '#32B505';
+						}
+						$('.gpiobutton').prop('disabled', false)
+						document.getElementById("status_box").style.background = '#32B505';
+						document.getElementById("status_box").innerHTML = "Ready";
+					});
+				}
+				//-----------------------------------------------------
+				//LAUNCH SCENARIO WHEN USER SELECT ONE
+				//-----------------------------------------------------
+				else if(this.GPIO_pin == "scenarioBtn") {
+					console.log("Scenario selected");
+					const functionPythonName = 'launch_scenario';
+					const functionPythonParamGPIOPin = this.id;
+					this.style.background = '#ffc300';
+					$('button').prop('disabled', true);
+					document.getElementById("status_box").style.background = '#FFC300';
+					document.getElementById("status_box").innerHTML = "Running";
+					var btncache = this;
+					$.getJSON(functionPythonName.concat("/", functionPythonParamGPIOPin), {}, function(data) {
+						$('button').prop('disabled', false);
+						console.log(data);
+						btncache.style.background = '#FF7144';
+						document.getElementById("status_box").style.background = '#32B505';
+						document.getElementById("status_box").innerHTML = "Ready";
+					});
+				}
+			}
+		});
+	});
+	//-----------------------------------------------------
+	//CREATING SCENARIO BUTTON
+	//-----------------------------------------------------
+	var element_boot = document.getElementById("scenario_boot_selector_id");
+	//récupération du JSON à l'arrivé sur la page
+	datascenariostr = '{{ datascenario }}';
+	//B is the \n separator
+	datascenariostr = datascenariostr.split("{}");
+	console.log(datascenariostr);
+	var theDiv = document.getElementById("other_button_div");
+	for(var i = 0; i < datascenariostr.length; i++) {
+		if(datascenariostr[i] != "") {
+			var sub_div_other = document.createElement("div");
+			sub_div_other.className = "csstypediv4";
+			datascenarioNAME = datascenariostr[i].split(" ")
+			//create remove button
+			let btnRMS = document.createElement("button");
+			btnRMS.innerHTML = "-";
+			btnRMS.id = "rm_scenario" + i;
+			btnRMS.className = "removeScenario"
+			sub_div_other.appendChild(btnRMS);
+			let btn = document.createElement("button");
+			btn.innerHTML = datascenarioNAME[0];
+			opt1 = document.createElement("option");
+			opt1.value = datascenarioNAME[0]; //the number of the scenario line -1
+			opt1.text = datascenarioNAME[0];
+			element_boot.add(opt1, null);
+			btn.id = "scenario" + i;
+			btn.GPIO_pin = "scenarioBtn";
+			btn.className = "scenario_button_css";
+			sub_div_other.appendChild(btn);
+			theDiv.appendChild(sub_div_other);
+		}
+	}
+	//-----------------------------------------------------
+	//CREATING DEVICE GPIO CONTROL BUTTON
+	//-----------------------------------------------------
+	//WHEN USER ARRIVE ON PAGE : PUT BUTTON ON THE RIGHT COLOR (RED OR GREEN AFTER CHECKING HIS GPIO STATE)
+	myJsonCleaned = '{{ name }}'.replaceAll('&#34;', '"');
+	const myArr = JSON.parse(myJsonCleaned);
+	var theDiv = document.getElementById("device_button_div");
+	//create page (add all device button AND call flask function "check status" to set button state (green or red) in function of GPIO state
+	for(var i = 0; i < myArr.devices.length; i++) {
+		var sub_sub_div = document.createElement("div");
+		sub_sub_div.className = "csstypediv2";
+		//nice image depend of device type (electronics or screen)
+		var sub_div_image_type = document.createElement("div");
+		if(myArr.devices[i].device_type == "rm_dev") {
+			sub_div_image_type.className = "rm_dev";
+		}
+		if(myArr.devices[i].device_type == "rm_DP") {
+			sub_div_image_type.className = "rm_DP";
+		}
+		if(myArr.devices[i].device_type == "not_dev_rm") {
+			sub_div_image_type.className = "not_dev_rm";
+		}
+		//PING DIV----------------------------------
+		var css_ping_div = document.createElement("div");
+		css_ping_div.className = "css_ping_div";
+		//sub div (for css container)
+		var css_div_title_ping = document.createElement("div");
+		var ipCut = myArr.devices[i].IP_adress.split(".");
+		console.log(ipCut);
+		css_div_title_ping.innerHTML = "Ethernet status ." + ipCut[ipCut.length - 1];
+		css_div_title_ping.className = "sub_div_title_IP";
+		//sub div (for css container)
+		var css_div_img_green_or_red_ping = document.createElement("div");
+		css_div_img_green_or_red_ping.id = "ping_status" + i;
+		css_div_img_green_or_red_ping.className = "ping_status";
+		//--------------------------------------------
+		//sub div (for css container)
+		var sub_div_title = document.createElement("div");
+		sub_div_title.innerHTML = myArr.devices[i].device_name;
+		sub_div_title.className = "sub_div_title";
+		//theDiv.appendChild(sub_div);
+		//sub div (for css container)
+		var sub_div = document.createElement("div");
+		sub_div.className = "csstypediv1";
+		//theDiv.appendChild(sub_div);
+		//details div (hidden by default, showed on edit mode)
+		var details_div = document.createElement("div");
+		details_div.className = "details_div";
+		if(myArr.devices[i].IP_adress == "" || myArr.devices[i].IP_adress == null) {
+			details_div.innerHTML = "<p>No IP defined " + "<br>Reboot time : " + myArr.devices[i].reboot_time + "<br>Raspberry Pin : " + myArr.devices[i].GPIO_pin + "</p>";
+		} else {
+			details_div.innerHTML = "<p>IP : " + myArr.devices[i].IP_adress + "<br>Reboot time : " + myArr.devices[i].reboot_time + "<br>Raspberry Pin : " + myArr.devices[i].GPIO_pin + "</p>";
+		}
+		//theDiv.appendChild(sub_div);
+		//sub div (for css container)
+		var button_on_off_reboot_div = document.createElement("div");
+		button_on_off_reboot_div.className = "csstypediv3";
+		//theDiv.appendChild(sub_div);
+		//on off button
+		let btn = document.createElement("button");
+		btn.innerHTML = myArr.devices[i].device_name;
+		btn.id = i;
+		btn.className = "gpiobutton"
+		btn.GPIO_pin = myArr.devices[i].GPIO_pin;
+		btn.device_type = myArr.devices[i].device_type;
+		btn.IP_adress = ipCut[ipCut.length - 1];
+		//reboot button
+		let btnreboot = document.createElement("button");
+		btnreboot.innerHTML = "REBOOT";
+		btnreboot.id = "reb" + i;
+		btnreboot.className = "rebootbutton"
+		btnreboot.GPIO_pin = myArr.devices[i].GPIO_pin;
+		btnreboot.REBOOT_time = myArr.devices[i].reboot_time;
+		btnreboot.device_type = myArr.devices[i].device_type;
+		//create remove button
+		let btnRM = document.createElement("button");
+		btnRM.innerHTML = "-";
+		btnRM.id = "rm" + i;
+		btnRM.className = "removeDevice"
+		btnRM.GPIO_pin = myArr.devices[i].GPIO_pin;
+		btnRM.device_name = myArr.devices[i].device_name;
+		sub_div.appendChild(btnRM);
+		sub_sub_div.appendChild(sub_div_image_type);
+		sub_sub_div.appendChild(sub_div_title);
+		sub_div.appendChild(sub_sub_div);
+		button_on_off_reboot_div.appendChild(btn);
+		button_on_off_reboot_div.appendChild(btnreboot);
+		if(myArr.devices[i].IP_adress != "") {
+			css_ping_div.appendChild(css_div_title_ping);
+			css_ping_div.appendChild(css_div_img_green_or_red_ping);
+		}
+		sub_div.appendChild(css_ping_div);
+		sub_div.appendChild(details_div);
+		sub_div.appendChild(button_on_off_reboot_div);
+		theDiv.appendChild(sub_div);
+		console.log("Checking GPIO");
+		const functionPythonName = 'check_status';
+		const functionPythonParamGPIOPin = myArr.devices[i].GPIO_pin + myArr.devices[i].device_type;
+		const buttonId = i;
+		$.getJSON(functionPythonName.concat("/", functionPythonParamGPIOPin), {}, function(data) {
+			if(data == 0) {
+				console.log("GPIO is on");
+				document.getElementById(buttonId.toString()).innerHTML = "OFF"
+				document.getElementById(buttonId.toString()).style.background = '#FF0000';
+			}
+			if(data == 1) {
+				console.log("GPIO is off");
+				document.getElementById(buttonId.toString()).innerHTML = "ON"
+				document.getElementById(buttonId.toString()).style.background = '#32B505';
+			} else {
+				console.log("error on find GPIO state");
+			}
+		});
+	}
+	</script>
+</body>
+
+</html>

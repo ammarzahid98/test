@@ -1,0 +1,67 @@
+{
+    "devices": [
+        {
+            "device_name": "Scenario Manager IP",
+            "device_type": "not_dev_rm",
+            "reboot_time": "7",
+            "GPIO_pin": "21",
+            "IP_adress": "192.168.1.14"
+        },
+        {
+            "device_name": "CID Display",
+            "device_type": "not_dev_rm",
+            "reboot_time": "7",
+            "GPIO_pin": "5",
+            "IP_adress": ""
+        },
+        {
+            "device_name": "PID Display",
+            "device_type": "not_dev_rm",
+            "reboot_time": "7",
+            "GPIO_pin": "3",
+            "IP_adress": ""
+        },
+        {
+            "device_name": "Lighting IP",
+            "device_type": "not_dev_rm",
+            "reboot_time": "7",
+            "GPIO_pin": "19",
+            "IP_adress": ""
+        },
+        {
+            "device_name": "Scenario Manager CC",
+            "device_type": "rm_dev",
+            "reboot_time": "7",
+            "GPIO_pin": "11",
+            "IP_adress": "192.168.1.15"
+        },
+        {
+            "device_name": "Lighting CC",
+            "device_type": "rm_dev",
+            "reboot_time": "7",
+            "GPIO_pin": "7",
+            "IP_adress": ""
+        },
+        {
+            "device_name": "Scenario Manager DP",
+            "device_type": "rm_DP",
+            "reboot_time": "7",
+            "GPIO_pin": "11",
+            "IP_adress": "192.168.1.16"
+        },
+        {
+            "device_name": "Lighting DP",
+            "device_type": "rm_DP",
+            "reboot_time": "7",
+            "GPIO_pin": "7",
+            "IP_adress": ""
+        },
+        {
+            "device_name": "Cluster",
+            "device_type": "not_dev_rm",
+            "reboot_time": "7",
+            "GPIO_pin": "13",
+            "IP_adress": ""
+        }
+    ]
+}
